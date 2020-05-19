@@ -25,18 +25,19 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (Input.GetButtonDown("Fire"))
+        //the best worst jump function ever created
+        if (Input.GetButtonDown("Fire1")) //update to only work when touching ground
         {
-            Debug.Log("jump");
+            rb.AddForce(Vector3.up * 1500f);
         }
 
-
-        if (Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Horizontal") < 0 || Input.GetAxis("Vertical") < 0 || Input.GetAxis("Vertical") > 0)
+        //Goodbye acceleration code, you were too good for this world, although likely not terribly efficient
+        /*if (Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Horizontal") < 0 || Input.GetAxis("Vertical") < 0 || Input.GetAxis("Vertical") > 0)
         {
             
-            coastDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")); //this is wrong because vector2 uses x and y not x and z, valve plz fix
+            coastDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             DecelerationTimer = 0f;
             DecelerationSpeed = 0f;
             if (Timer < AccelerationTime)
@@ -48,13 +49,13 @@ public class PlayerMovement : MonoBehaviour
                 Timer = AccelerationTime;
             }
 
-            AccelerationSpeed = Mathf.Pow(2, 0.5f * Timer) - 1f;
+            AccelerationSpeed = Mathf.Pow(2, 0.5f * Timer) - 1f; //oncollisionenter stop the capsule collider from accelerating in the direction of the collision obstacle
             //AccelerationSpeed = -1 * (Mathf.Pow(2, 0.5f * Timer) - 2f);
 
             /*if (AccelerationSpeed > OldAccelerationSpeed)
             {
                 OldAccelerationSpeed = AccelerationSpeed;
-            }*/
+            }
 
             OldAccelerationSpeed = AccelerationSpeed;
             
@@ -76,11 +77,17 @@ public class PlayerMovement : MonoBehaviour
             //DecelerationSpeed = Mathf.Pow(-1f * 0.25f * DecelerationTimer, 2f) + 1f; //Alternative deceleration method. requires Deceleration time to be 2f, uses a parabola instead of exponential
             //DecelerationSpeed = (Mathf.Pow(2, (-1 * DecelerationTimer) + 1f) - 1f);  //Alternative deceleration method, uses inverted exponential. requires deceleration time to be 1f.
             DecelerationSpeed = -1 * (Mathf.Pow(2, DecelerationTimer) - 2f);
-            transform.Translate(coastDirection * Time.deltaTime * MovementSpeed * DecelerationSpeed * OldAccelerationSpeed);
-        }
+            rb.AddForce(coastDirection * Time.fixedDeltaTime * MovementSpeed * DecelerationSpeed * OldAccelerationSpeed);
+        }*/
 
 
         //Debug.Log(Input.GetAxis("Horizontal"));
-        transform.Translate(Input.GetAxis("Horizontal") * Time.deltaTime * MovementSpeed * AccelerationSpeed, 0, Input.GetAxis("Vertical") * Time.deltaTime * MovementSpeed * AccelerationSpeed);
+        
+
+        //This one is a lot more fun but doesn't work with collision :(
+        //transform.Translate(new Vector3(Input.GetAxis("Horizontal") * Time.fixedDeltaTime * MovementSpeed * AccelerationSpeed, 0, Input.GetAxis("Vertical") * Time.fixedDeltaTime * MovementSpeed * AccelerationSpeed));
+        
+        //This is the boring smoring physics based one
+        rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * Time.fixedDeltaTime * MovementSpeed, 0, Input.GetAxis("Vertical") * Time.fixedDeltaTime * MovementSpeed));
     }
 }
